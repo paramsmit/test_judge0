@@ -1,6 +1,6 @@
 const unirest = require('unirest')
 
-var getreq = unirest("GET", "https://judge0.p.rapidapi.com/submissions/c6bdedb6-83a7-418e-97fd-66a62ce95268?base64_encoded=true");
+var getreq = unirest("GET", "https://judge0.p.rapidapi.com/submissions/b60c250f-45d3-47eb-8ec4-c31bc0cc1e04?base64_encoded=true");
 
 getreq.headers({
 	"x-rapidapi-host": "judge0.p.rapidapi.com",
