@@ -9,9 +9,9 @@ app.use(express.static('./views/'));
 
 app.post('/', (req, res) => {
 
-	var postreq = unirest("POST", "https://judge0.p.rapidapi.com/submissions");
+	var postsubmission = unirest("POST", "https://judge0.p.rapidapi.com/submissions");
 
-	postreq.headers({
+	postsubmission.headers({
 		"x-rapidapi-host": "judge0.p.rapidapi.com",
 		"x-rapidapi-key": "168bcf348emsh412770aea95bbcdp1cff1djsn3ff583f3e2d2",
 		"content-type": "application/json",
@@ -20,26 +20,33 @@ app.post('/', (req, res) => {
 		"base64_encoded" : true
 	});
 
-	postreq.type("json");
+	postsubmission.type("json");
 
-	console.log(req.body);
-
-	postreq.send({
+	postsubmission.send({
 		"language_id": 53,
 		"source_code": req.body.code
+	}).then(function (postres) {
+		
+		if (postres.error) throw new Error(postres.error)	;
 
-	// "stdin": "world"	
-	});
+		var URL = "https://judge0.p.rapidapi.com/submissions/" + postres.body.token + "?base64_encoded=false";
+		
+		var getsubmission = unirest("GET", URL);
+		
+		getsubmission.headers({
+			"x-rapidapi-host": "judge0.p.rapidapi.com",
+			"x-rapidapi-key": "168bcf348emsh412770aea95bbcdp1cff1djsn3ff583f3e2d2",
+			"useQueryString": true,
+		});
 
-	postreq.end(function (postres) {
-		if (res.error) throw new Error(res.error);
-		// console.log(res.body);
-		console.log(postres.body);
-		res.send(postres.body);
-	});
+		setTimeout(() => getsubmission.end(function(getres) {
+			console.log(getres.error);
+			if (getres.error) throw new Error(getres.error);
+			console.log(getres.body);
+			res.send(getres.body);
+		}),2000)
+
+	})	
 })
 
-
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`))
-
-// 
