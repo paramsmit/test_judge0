@@ -2,6 +2,7 @@ const unirest = require('unirest')
 const express = require('express')
 const app = express();
 const PORT = process.env.PORT || 3000;
+const {languages} = require('./langs.js')
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -22,14 +23,18 @@ app.post('/', (req, res) => {
 
 	postsubmission.type("json");
 
+	// console.log(languages.get(req.body.lan));
+	// var language = languages.get(req.body.lan);
+	console.log(req.body.code);
+
 	postsubmission.send({
-		"language_id": 53,
+		"language_id": 71,
 		"source_code": req.body.code
 	}).then(function (postres) {
-		
-		if (postres.error) throw new Error(postres.error)	;
+		// handle promise rejection here
+		if (postres.error) throw new Error(postres.error);
 
-		var URL = "https://judge0.p.rapidapi.com/submissions/" + postres.body.token + "?base64_encoded=false";
+		var URL = `https://judge0.p.rapidapi.com/submissions/${postres.body.token}?base64_encoded=false`;
 		
 		var getsubmission = unirest("GET", URL);
 		
@@ -44,8 +49,14 @@ app.post('/', (req, res) => {
 			if (getres.error) throw new Error(getres.error);
 			console.log(getres.body);
 			res.send(getres.body);
-		}),2000)
+		}),7000)
 
+		// getsubmission.end(function(getres) {	
+		// 	console.log(getres.error);	
+		// 	if (getres.error) throw new Error(getres.error);
+		// 	console.log(getres.body);
+		// 	res.send(getres.body);
+		// })
 	})	
 })
 
