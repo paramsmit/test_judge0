@@ -1,12 +1,9 @@
-const {editor} = require('./codemirror.js')
-
+import {editor} from './codemirror.js'
 const lan = document.getElementById('lan')
+const submitbtn = document.getElementById('submitbtn')
 
-console.log(editor.getOption("value"));
-
-var code = editor.getOption("value");
-
-function submit(){
+submitbtn.addEventListener("click",()=>{
+	const code = editor.getValue()
 	var request = new XMLHttpRequest();
 	var URL = 'http://localhost:3000/';
 	const body = {
@@ -21,4 +18,4 @@ function submit(){
 		document.getElementById('stdout').innerHTML = data.stdout;
 		document.getElementById('discription').innerHTML = data.status.description;
 	}
-}		
+})

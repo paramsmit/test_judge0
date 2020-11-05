@@ -2,39 +2,37 @@
 <html>
 <head>
 	<title>test_judge0</title>
-
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/codemirror.min.js"></script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/mode/clike/clike.min.js"> </script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/mode/javascript/javascript.min.js"> </script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/mode/python/python.min.js"> </script>
-
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/codemirror.min.css"></link>
 </head>
 <body>
-	<label for="lan">Choose a language</label>	
-	<select onchange="changemode()" name="lan" id="lan">
+	<label for="lan">Choose a language</label>	 
+	<select name="lan" id="lan">
 		<option value="C++ (GCC 8.3.0)">Cpp</option>
 		<option value="Python(3.8.1)">Python</option>
 		<option value="C (GCC 8.3.0)">C</option>
 		<option value="Java (OpenJDK 13.0.1)">Java</option>
 		<option value="JavaScript (Node.js 12.14.0)">JavaScript</option>
-	  </select>	  
+	</select>	  
 
 	<br>
 	<textarea id ='editor'></textarea>
-	<br>
+	<br> 
 
-	<script src = "./codemirror.js"> </script>
 
 	<div id = "output">
 		<h1 id = "stdout"></h1>
 		<h2 id = "discription"> </h2>
 	</div>
 	<br>
-	<button onclick = "submit()" >submit code</button>
-	<!-- changing the order of javascript src is affecting the code here -->
-	<script src="submit.js"></script>	
 
+	<button id = "submitbtn" >submit code</button>
+
+	<script type = "module" src = "./codemirror.js" > </script>
+	<script type = "module" src="./submit.js"></script>	
 
 </body>
 </html>	

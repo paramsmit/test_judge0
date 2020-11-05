@@ -5,18 +5,19 @@ map.set("C++ (GCC 8.3.0)", "text/x-c++src")
 .set("Java (OpenJDK 13.0.1)", "text/x-java")
 .set("Python(3.8.1)","text/x-python");
 
-var editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+let editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
     lineNumbers: true,  
     tabSize: 4,
     mode: 'text/x-c++src',  
     matchBrackets: true,
-});
+}); 
 editor.save()
 
-function changemode(){
-    var mode = document.getElementById("lan").value;
+const lan = document.getElementById("lan");
+lan.addEventListener("change",() => {
+    var mode = lan.value;
     editor.setOption("mode", map.get(mode));
     editor.save()
-}
+})
 
-module.exports.editor = editor;
+export {editor};

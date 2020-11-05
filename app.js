@@ -23,12 +23,12 @@ app.post('/', (req, res) => {
 
 	postsubmission.type("json");
 
-	// console.log(languages.get(req.body.lan));
-	// var language = languages.get(req.body.lan);
+	console.log(languages.get(req.body.lan));
+	var language = languages.get(req.body.lan);
 	console.log(req.body.code);
 
 	postsubmission.send({
-		"language_id": 71,
+		"language_id": language,
 		"source_code": req.body.code
 	}).then(function (postres) {
 		// handle promise rejection here
@@ -56,7 +56,7 @@ app.post('/', (req, res) => {
 		// 	if (getres.error) throw new Error(getres.error);
 		// 	console.log(getres.body);
 		// 	res.send(getres.body);
-		// })
+		// })`
 	})	
 })
 
