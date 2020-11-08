@@ -11,6 +11,7 @@ let editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
     mode: 'text/x-c++src',  
     matchBrackets: true,
 }); 
+
 editor.save()
 
 const lan = document.getElementById("lan");

@@ -1,13 +1,28 @@
 const unirest = require('unirest')
 const express = require('express')
 const app = express();
+const MongoClient = require('mongodb').MongoClient
 const PORT = process.env.PORT || 3000;
 const {languages} = require('./langs.js')
-const {decode_base64} = require('./decode.js')
+
+// const {decode_base64} = require('./decode.js')
+
+let inputdata, outputdata;
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(express.static('./views/'));
+
+app.use('/',(req,res,next)=>{
+	MongoClient.connect('mongodb://localhost:27017/testcases', async (err,client) => {
+		if(err) throw err;
+		var db = client.db('testcases');
+		const result = await db.collection('problems').findOne({"id" : 2});
+		inputdata = result.inputdata;
+		outputdata = result.outputdata;
+		next();
+	})	
+})
 
 app.post('/', (req, res) => {
 
@@ -23,20 +38,16 @@ app.post('/', (req, res) => {
 	postsubmission.type("json");
 
 	var language = languages.get(req.body.lan);
-	console.log(req.body.code);
-
+	
 	postsubmission.send({
 		"language_id": language,
 		"source_code": req.body.code,
-		// "stdin" : `
-		// 	1
-		// 	2
-		// 	3
-		// `
+		"stdin" : inputdata
 	}).then(function (postres) {
-	
+		
 		if (postres.error) throw new Error(postres.error);
-		var URL = `https://judge0.p.rapidapi.com/submissions/${postres.body.token}?base64_encoded=true`;
+		
+		var URL = `https://judge0.p.rapidapi.com/submissions/${postres.body.token}?base64_encoded=false`;
 
 		var getsubmission = unirest("GET", URL);
 
@@ -47,9 +58,23 @@ app.post('/', (req, res) => {
 		});
 
 		setTimeout(() => getsubmission.end(function(getres) {
+			
 			if (getres.error) throw new Error(getres.error);
-			// console.log(getres.body);
-			res.send(getres.body);
+			
+			// console.log(getres.body.stdout);
+
+			if(getres === outputdata){
+				res.send({
+					stdout : outputdata,
+					discription : "accepted"
+				})
+			}
+			else{
+				res.json({
+					stdout : getres.body.stdout,
+					discription : "wa"
+				})
+			}
 		}),7000)
 	})
 })
