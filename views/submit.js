@@ -10,7 +10,6 @@ submitbtn.addEventListener("click",()=>{
 	const body = {
 		"lan" : lan.value,
 		"code" : code,	
-		// "id" : 1
 	}	
 	request.open('POST',URL);
 	request.setRequestHeader('Content-Type', 'application/json');
@@ -19,6 +18,6 @@ submitbtn.addEventListener("click",()=>{
 		var data = JSON.parse(request.responseText);
 		console.log(data);
 		// document.getElementById('stdout').innerHTML = data.stdout;
-		document.getElementById('discription').innerHTML = data.discription;
+		// document.getElementById('discription').innerHTML = data.discription;
 	}
 })
