@@ -2,11 +2,11 @@ const unirest = require('unirest')
 const express = require('express')
 const app = express();
 const MongoClient = require('mongodb').MongoClient
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 const {languages} = require('./langs.js')
 // const {decode_base64} = require('./decode.js')
 
-let inputdata, outputdata;
+var inputdata, outputdata;
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
@@ -18,10 +18,10 @@ app.use('/',(req,res,next) => {
 			try{
 				if(err) throw err;
 				var db = client.db('testcases');
-				var promise = new Promise((resolve,reject)=>{
+				var promise = new Promise((resolve,reject) => {
 					// if id does not match then also returns error as null
 					db.collection('problems').findOne({"id" : 2}, (err,result)=>{
-						err ? reject(err) : resolve(result)
+						err ? reject("Internal Server Error") : resolve(result)
 					})
 				})
 				promise.then(result => {
@@ -32,15 +32,16 @@ app.use('/',(req,res,next) => {
 				})
 				.catch(
 					err => {
-						res.send(err)
+						res.send({
+							"discription" : err
+						})
 						client.close()			
-				})
-			
-			// const result = await db.collection('problems').findOne({"id" : 2});
-			// inputdata = result.inputdata;
-			// outputdata = result.outputdata;		
-		}catch(e){
-			res.send(e)
+				})	
+		
+		}catch(err){
+			res.send({
+				"discription" : "Internal Server Error"
+			})
 		}
 	})
 })
@@ -67,7 +68,7 @@ app.post('/', (req, res) => {
 	}).then(function (postres) {
 		
 		if (postres.error) throw new Error(postres.error);
-		// error comes when compilation failed in c++ and c
+		// error comes when compilation failed in c++ and c ... base64 encoding
 
 		var URL = `https://judge0.p.rapidapi.com/submissions/${postres.body.token}?base64_encoded=false`;
 
@@ -82,47 +83,33 @@ app.post('/', (req, res) => {
 		setTimeout(() => getsubmission.end(function(getres) {
 			try{
 				if (getres.error){ 
-					throw "error is catched"
+					// for c++ 400 error is coming
+					console.log(getres)
+					throw "runtime or compilation error"
 				}
 
 				var stdout = getres.body.stdout
 				var discription = getres.body.status.description
-				var message = getres.body.message
-				var stderr = getres.body.stderr
-				var compile_output = getres.body.compile_output
 
-				if(getres.body.stdout === outputdata){
+				if(stdout === outputdata){
 					res.send({
-						"stdout" : stdout,
 						"discription" : "Accepted",
-						"message" : message,
-						"stderr" : stderr,
-						"compile_output" : compile_output
 					})
 				}	
 				else if(discription === "Accepted" && stdout !== outputdata){
 					res.send({
-						"stdout" : stdout,
 						"discription" : "wrong answer",
-						"message" : message,
-						"stderr" : stderr,
-						"compile_output" : compile_output
-					})
+					})	
 				}
-			
 				else{
 					res.send({
-						"stdout" : stdout,
 						"discription" : discription,
-						"message" : message,
-						"stderr" : stderr,
-						"compile_output" : compile_output
 					})
 				}
 
-			// all the possiblities of the answer mle tle wa accepted runtime error etc
-			// verdict
-			}catch(e) {res.send(e)}
+			}catch(err) {res.send({
+				"discription" : err
+			})}
 		}),7000)
 	})
 })
